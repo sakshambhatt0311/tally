@@ -34,7 +34,3 @@ To run Tally locally:
    - Download the `google-services.json` file and place it in the `app/` directory.
    - Enable Authentication (Google Sign-In) and Firestore Database.
 4. Sync Gradle and run the app on an emulator or physical device.
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
