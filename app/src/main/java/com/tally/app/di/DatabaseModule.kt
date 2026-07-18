@@ -23,9 +23,6 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): TallyDatabase =
         Room.databaseBuilder(context, TallyDatabase::class.java, "tally_database")
-            // No real migrations exist yet + no user data to protect; on a version bump just drop
-            // and rebuild the tables. This clears the old mock-seeded rows on next launch.
-            .fallbackToDestructiveMigration()
             .build()
 
     @Provides
