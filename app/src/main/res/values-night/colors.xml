@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark forest-green window background — matches DarkBackground so night launch never flashes. -->
+    <color name="tally_window_background">#111A15</color>
+</resources>

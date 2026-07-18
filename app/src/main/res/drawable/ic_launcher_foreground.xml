@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tally marks: four green vertical strokes + one gold diagonal strikethrough (the "5").
+  108x108 viewport; strokes stay inside the 18..90 (72dp) safe zone so masking never crops them.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Four vertical tally strokes, deep brand green -->
+    <path
+        android:strokeColor="#1B7A46"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M36,36 L36,72" />
+    <path
+        android:strokeColor="#1B7A46"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M48,36 L48,72" />
+    <path
+        android:strokeColor="#1B7A46"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M60,36 L60,72" />
+    <path
+        android:strokeColor="#1B7A46"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M72,36 L72,72" />
+
+    <!-- Diagonal strikethrough, gold accent -->
+    <path
+        android:strokeColor="#E3A73B"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M30,74 L78,34" />
+</vector>

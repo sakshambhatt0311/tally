@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      App launch theme. windowBackground follows day/night via @color/tally_window_background,
+      so the pre-Compose window (and any nav-transition gap) matches the active theme's canvas
+      instead of flashing white. Transparent bars for edge-to-edge.
+    -->
+    <style name="Theme.Tally" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/tally_window_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!--
+      Launch splash (Core SplashScreen API). Background reuses the day/night window color so the
+      splash matches the active theme's canvas, then hands off to Theme.Tally once Compose is ready.
+      The custom exit zoom/fade lives in MainActivity's setOnExitAnimationListener.
+    -->
+    <style name="Theme.Tally.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/tally_window_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Tally</item>
+    </style>
+</resources>

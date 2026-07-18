@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light window background (off-white). Overridden in values-night. -->
+    <color name="tally_window_background">#F4F5EF</color>
+</resources>
