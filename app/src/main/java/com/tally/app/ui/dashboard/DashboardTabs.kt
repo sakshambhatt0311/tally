@@ -206,17 +206,21 @@ private fun FeedCard(
 
 private val feedTimeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
 private val feedDateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
+private val feedDateYearFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
 
-/** Compact relative timestamp for a Feed card: "Today · 9:42 PM", "Yesterday", "3 days ago", or a date. */
+/** Compact relative timestamp for a Feed card. */
 private fun relativeTime(playedAt: Long): String {
     val now = Calendar.getInstance()
     val then = Calendar.getInstance().apply { timeInMillis = playedAt }
+    val date = Date(playedAt)
+    val timeString = feedTimeFormat.format(date).lowercase(Locale.getDefault())
     return when {
-        isSameDay(now, then) -> "Today · ${feedTimeFormat.format(Date(playedAt))}"
-        isYesterday(now, then) -> "Yesterday"
+        isSameDay(now, then) -> "Today · $timeString"
+        isYesterday(now, then) -> "Yesterday · $timeString"
         else -> {
-            val days = ((now.timeInMillis - playedAt) / 86_400_000L).toInt()
-            if (days in 2..6) "$days days ago" else feedDateFormat.format(Date(playedAt))
+            val isSameYear = now.get(Calendar.YEAR) == then.get(Calendar.YEAR)
+            val dateString = if (isSameYear) feedDateFormat.format(date) else feedDateYearFormat.format(date)
+            "$dateString · $timeString"
         }
     }
 }
