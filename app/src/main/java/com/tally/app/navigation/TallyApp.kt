@@ -187,7 +187,6 @@ fun TallyApp(
                 circleName = route.circleName,
                 initialTabIndex = route.initialTabIndex,
                 onBackClick = { navController.popBackStack() },
-                onAddGameClick = { navController.navigate(TallyRoute.AddGame(route.circleId)) },
                 onLogSessionClick = { navController.navigate(TallyRoute.LogSession(route.circleId)) },
                 onViewHeadToHead = { playerAId, playerBId ->
                     navController.navigate(TallyRoute.HeadToHead(route.circleId, playerAId, playerBId))

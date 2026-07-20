@@ -357,7 +357,6 @@ private fun podiumContainerColor(rank: Int): Color = when (rank) {
 
 @Composable
 fun GamesTab(
-    onAddGameClick: () -> Unit = {},
     onGameClick: (gameId: String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: GamesViewModel = hiltViewModel(),
@@ -384,19 +383,6 @@ fun GamesTab(
                 }
             }
         }
-        // Floating, bottom-right — identical structure to the Board tab's "+ Log Session" FAB.
-        ExtendedFloatingActionButton(
-            onClick = onAddGameClick,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
-            icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-            text = { Text("Add a Game", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold) },
-        )
     }
 }
 

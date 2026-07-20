@@ -63,7 +63,6 @@ fun CircleDashboardScreen(
     circleId: String,
     circleName: String,
     onBackClick: () -> Unit,
-    onAddGameClick: () -> Unit,
     onLogSessionClick: () -> Unit,
     onViewHeadToHead: (playerAId: String, playerBId: String) -> Unit,
     onGameClick: (gameId: String) -> Unit = {},
@@ -203,7 +202,7 @@ fun CircleDashboardScreen(
                     when (selectedTabIndex) {
                         0 -> FeedTab(viewModel = feedViewModel)
                         1 -> BoardTab(viewModel = boardViewModel)
-                        2 -> GamesTab(onAddGameClick = onAddGameClick, onGameClick = onGameClick, viewModel = gamesViewModel)
+                        2 -> GamesTab(onGameClick = onGameClick, viewModel = gamesViewModel)
                         else -> MembersTab(viewModel = membersViewModel)
                     }
                 }
