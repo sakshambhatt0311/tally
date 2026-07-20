@@ -153,6 +153,7 @@ fun LogSessionWizard(
                         scoringUnit = state.selectedGame?.scoringUnit ?: "points",
                         isChess = state.isChess,
                         isBilliards = state.isBilliards,
+                        isTekken = state.isTekken,
                         onMovePlayer = onMovePlayer,
                         onPointsChanged = onPointsChanged,
                         onWinnerToggled = onWinnerToggled,
@@ -474,7 +475,11 @@ private fun PlayerSelectRow(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PlayerAvatar(initial = member.initial, backgroundColor = member.colorKey.toAvatarColor())
+            PlayerAvatar(
+                initial = member.initial,
+                backgroundColor = member.colorKey.toAvatarColor(),
+                photoUrl = member.photoUrl,
+            )
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(
@@ -524,6 +529,7 @@ private fun EnterResultsStep(
     scoringUnit: String,
     isChess: Boolean,
     isBilliards: Boolean,
+    isTekken: Boolean,
     onMovePlayer: (Int, Int) -> Unit,
     onPointsChanged: (String, String) -> Unit,
     onWinnerToggled: (RosterMember) -> Unit,
@@ -542,12 +548,13 @@ private fun EnterResultsStep(
             PlacementResults(ordered, onMovePlayer, modifier)
         }
         is SessionResults.Points -> PointsResults(players, results.pointsByPlayer, scoringUnit, onPointsChanged, modifier)
-        // Chess gets its own 1v1 win/draw picker. Billiards is single-select (tap replaces the winner).
+        // Chess gets its own 1v1 win/draw picker. Billiards and Tekken are single-select (tap replaces
+        // the winner) — strict 1v1, exactly one winner, no draw option.
         // Every other win/loss game keeps the multi-select "Who won?" grid (Pool, FM, CoD/Halo, …).
         is SessionResults.WinLoss -> when {
             isChess && players.size == 2 ->
                 ChessResults(players[0], players[1], results.winners, onWinnersSet, modifier)
-            isBilliards ->
+            isBilliards || isTekken ->
                 WinLossResults(players, results.winners, onPlayerClick = { onWinnersSet(setOf(it.id)) }, modifier = modifier)
             else ->
                 WinLossResults(players, results.winners, onPlayerClick = onWinnerToggled, modifier = modifier)
@@ -625,7 +632,7 @@ private fun ChessOptionCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (player != null) {
-                PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 40.dp)
+                PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 40.dp, photoUrl = player.photoUrl)
             } else {
                 // Draw: neutral handshake tile instead of a player avatar.
                 Box(
@@ -766,7 +773,7 @@ private fun PlacementRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.widthIn(min = 40.dp),
             )
-            PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 32.dp)
+            PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 32.dp, photoUrl = player.photoUrl)
             Text(
                 text = player.name,
                 style = MaterialTheme.typography.titleMedium,
@@ -847,7 +854,7 @@ private fun PointsResults(
         item { ResultsCaption("Enter each player's $scoringUnit") }
         items(players, key = { it.name }) { player ->
             ResultRowCard {
-                PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 32.dp)
+                PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 32.dp, photoUrl = player.photoUrl)
                 PlayerNameLabel(player.name)
                 OutlinedTextField(
                     // State keeps points as a String; bridge to Int here. 0 renders blank so the
@@ -935,7 +942,7 @@ private fun WinLossResults(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 40.dp)
+                    PlayerAvatar(initial = player.initial, backgroundColor = player.colorKey.toAvatarColor(), size = 40.dp, photoUrl = player.photoUrl)
                     PlayerNameLabel(player.name)
                     if (selected) {
                         Icon(Icons.Rounded.CheckCircle, contentDescription = "Winner", tint = MaterialTheme.colorScheme.primary)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adaptive-icon FOREGROUND layer (512x512, transparent). Strokes sit inside the ~66% safe
+     zone so launcher masks (circle / squircle / rounded-square) never crop them.
+     Mirrors app/src/main/res/drawable/ic_launcher_foreground.xml. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Tally adaptive foreground">
+  <g fill="none" stroke-linecap="round" stroke-width="28">
+    <g stroke="#1B7A46">
+      <path d="M171 171 V341"/>
+      <path d="M228 171 V341"/>
+      <path d="M284 171 V341"/>
+      <path d="M341 171 V341"/>
+    </g>
+    <path stroke="#E3A73B" d="M142 351 L370 161"/>
+  </g>
+</svg>

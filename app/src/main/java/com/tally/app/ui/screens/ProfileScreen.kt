@@ -1,5 +1,6 @@
 package com.tally.app.ui.screens
 
+import com.tally.app.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -214,11 +215,7 @@ fun ProfileScreen(
                                 authViewModel.setGoogleSignInLoading(true)
                                 
                                 val clientId = getWebClientId(context)
-                                if (clientId == "PLACEHOLDER_CLIENT_ID") {
-                                    authViewModel.setAuthError("Google Sign-In is not configured. Missing Web Client ID.")
-                                    return@launch
-                                }
-                                
+
                                 val googleIdOption = GetGoogleIdOption.Builder()
                                     .setFilterByAuthorizedAccounts(false)
                                     .setServerClientId(clientId)
@@ -294,10 +291,8 @@ private fun SignInPill(isLinked: Boolean, isLoading: Boolean = false, onClick: (
     }
 }
 
-private fun getWebClientId(context: android.content.Context): String {
-    val id = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
-    return if (id != 0) context.getString(id) else "PLACEHOLDER_CLIENT_ID"
-}
+private fun getWebClientId(context: android.content.Context): String =
+    context.getString(R.string.default_web_client_id)
 
 @Composable
 private fun EditProfileDialog(

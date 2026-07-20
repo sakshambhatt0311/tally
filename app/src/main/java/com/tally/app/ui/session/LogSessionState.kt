@@ -51,6 +51,9 @@ data class LogSessionState(
     /** Billiards is strictly 1v1 — the win/loss step is single-select (radio), not multi-select. */
     val isBilliards: Boolean get() = templateIs("Billiards")
 
+    /** Tekken is strictly 1v1 with no draws — single-select winner, exactly one winner required. */
+    val isTekken: Boolean get() = templateIs("Tekken")
+
     /** Racket sports (Table Tennis / Badminton / Tennis) allow 2 to 4 players. */
     val isRacketSport: Boolean
         get() = selectedGame?.templateId?.let { id -> RACKET_SPORTS.any { it.equals(id, ignoreCase = true) } } == true

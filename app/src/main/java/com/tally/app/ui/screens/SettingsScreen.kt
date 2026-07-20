@@ -220,7 +220,7 @@ fun SettingsScreen(
                         modifier = Modifier.weight(1f),
                     )
                     Text(
-                        text = "1.0.0",
+                        text = com.tally.app.BuildConfig.VERSION_NAME,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

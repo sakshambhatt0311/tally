@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tally — Google Play feature graphic (1024x500). Brand-green field, mark + wordmark + tagline,
+     with an oversized low-opacity mark as a flat watermark on the right (no blur/shadow).
+     Export to 24-bit PNG or JPEG for upload. Wordmark uses a font fallback — install Plus Jakarta
+     Sans or convert text to outlines before publishing. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500" role="img" aria-label="Tally feature graphic">
+  <rect width="1024" height="500" fill="#123A2B"/>
+
+  <!-- oversized watermark mark, flat low-opacity, right side -->
+  <g transform="translate(600 -40) scale(1.15)" fill="none" stroke-linecap="round" stroke-width="28" opacity="0.08">
+    <g stroke="#FFFFFF">
+      <path d="M171 171 V341"/>
+      <path d="M228 171 V341"/>
+      <path d="M284 171 V341"/>
+      <path d="M341 171 V341"/>
+    </g>
+    <path stroke="#FFFFFF" d="M142 351 L370 161"/>
+  </g>
+
+  <!-- foreground mark -->
+  <g transform="translate(56 116) scale(0.52)" fill="none" stroke-linecap="round" stroke-width="30">
+    <g stroke="#FFFFFF">
+      <path d="M171 171 V341"/>
+      <path d="M228 171 V341"/>
+      <path d="M284 171 V341"/>
+      <path d="M341 171 V341"/>
+    </g>
+    <path stroke="#E3A73B" d="M142 351 L370 161"/>
+  </g>
+
+  <!-- wordmark + tagline -->
+  <text x="336" y="248" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif"
+        font-size="104" font-weight="800" letter-spacing="-3" fill="#FFFFFF">Tally</text>
+  <text x="340" y="312" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif"
+        font-size="36" font-weight="600" fill="#58D690">Score every game night. Automatically.</text>
+</svg>

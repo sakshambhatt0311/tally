@@ -149,11 +149,7 @@ fun WelcomeScreen(
                             authViewModel.setGoogleSignInLoading(true)
                             
                             val clientId = getWebClientId(context)
-                            if (clientId == "PLACEHOLDER_CLIENT_ID") {
-                                authViewModel.setAuthError("Google Sign-In is not configured. Missing Web Client ID.")
-                                return@launch
-                            }
-                            
+
                             val googleIdOption = GetGoogleIdOption.Builder()
                                 .setFilterByAuthorizedAccounts(false)
                                 .setServerClientId(clientId)
@@ -207,10 +203,8 @@ fun WelcomeScreen(
     }
 }
 
-private fun getWebClientId(context: android.content.Context): String {
-    val id = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
-    return if (id != 0) context.getString(id) else "PLACEHOLDER_CLIENT_ID"
-}
+private fun getWebClientId(context: android.content.Context): String =
+    context.getString(R.string.default_web_client_id)
 
 private tailrec fun android.content.Context.findActivity(): android.app.Activity? = when (this) {
     is android.app.Activity -> this

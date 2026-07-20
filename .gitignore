@@ -1,6 +1,7 @@
 *.iml
 .gradle
 local.properties
+secrets.properties
 .idea/
 .DS_Store
 build/
@@ -9,3 +10,7 @@ app/build/
 .cxx
 google-services.json
 .kotlin/
+
+app/release/
+*.jks
+*.keystore

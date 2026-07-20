@@ -8,14 +8,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,11 +48,24 @@ fun PlayerAvatar(
         contentAlignment = Alignment.Center,
     ) {
         if (!photoUrl.isNullOrEmpty()) {
+            // Robust Coil load: crossfade in, show the player's tint while downloading, and fall
+            // back to a person silhouette if the URL is broken or the fetch fails over the network.
+            val personPainter = rememberVectorPainter(Icons.Rounded.Person)
             AsyncImage(
-                model = photoUrl,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(photoUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
+                placeholder = ColorPainter(backgroundColor),
+                error = personPainter,
+                fallback = personPainter,
+                // Size comes from the parent Box (matchParentSize); clip AFTER sizing so the round
+                // crop never distorts the image bounds during subcomposition.
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(TallyAvatarShape),
             )
         } else {
             Text(

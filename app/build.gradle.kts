@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION", "DEPRECATION_ERROR")
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -15,11 +14,11 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.tally.app"
+        applicationId = "io.github.sakshambhatt0311.tally"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 6
+        versionName = "1.0.5"
     }
 
     buildTypes {
@@ -37,6 +36,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

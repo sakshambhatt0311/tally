@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tally logo mark, single-color (monochrome). Uses currentColor so you can recolor via CSS
+     (fill/color), or swap #1A1B18 for white on dark backgrounds. For one-color contexts:
+     stamps, embossing, dark-mode watermarks, favicons. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Tally logo (monochrome)">
+  <g fill="none" stroke="currentColor" color="#1A1B18" stroke-linecap="round" stroke-width="28">
+    <path d="M171 171 V341"/>
+    <path d="M228 171 V341"/>
+    <path d="M284 171 V341"/>
+    <path d="M341 171 V341"/>
+    <path d="M142 351 L370 161"/>
+  </g>
+</svg>
