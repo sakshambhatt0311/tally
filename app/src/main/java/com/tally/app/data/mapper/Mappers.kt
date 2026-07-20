@@ -35,6 +35,7 @@ fun CircleEntity.toDomain(members: List<Pair<String, PlayerColorKey>> = emptyLis
         activityLabel = activityLabel,
         membershipType = membershipType,
         isDeviceOnly = isDeviceOnly,
+        lastSessionAt = lastSessionAt,
     )
 
 fun Circle.toEntity(): CircleEntity =
@@ -46,6 +47,7 @@ fun Circle.toEntity(): CircleEntity =
         activityLabel = activityLabel,
         membershipType = membershipType,
         isDeviceOnly = isDeviceOnly,
+        lastSessionAt = lastSessionAt,
     )
 
 /** Maps the counted POJO to the domain model, overriding the static count with the live one. */

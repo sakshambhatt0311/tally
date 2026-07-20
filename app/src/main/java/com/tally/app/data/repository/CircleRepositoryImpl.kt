@@ -87,7 +87,8 @@ class CircleRepositoryImpl @Inject constructor(
                         activityLabel = "Online",
                         membershipType = com.tally.app.data.MembershipType.LINKED,
                         isDeviceOnly = false,
-                        inviteCode = snapshot.getString("inviteCode") ?: ""
+                        inviteCode = snapshot.getString("inviteCode") ?: "",
+                        lastSessionAt = snapshot.getLong("lastSessionAt")
                     )
                     trySend(circle)
                 } else {
@@ -132,7 +133,8 @@ class CircleRepositoryImpl @Inject constructor(
                 activityLabel = "Online",
                 membershipType = com.tally.app.data.MembershipType.OWNER,
                 isDeviceOnly = false,
-                inviteCode = generateInviteCode()
+                inviteCode = generateInviteCode(),
+                lastSessionAt = System.currentTimeMillis()
             )
             docRef.set(circle).await()
             Log.d(TAG, "WRITE createOnlineCircle: $circleId '$name'")
@@ -189,34 +191,40 @@ class CircleRepositoryImpl @Inject constructor(
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.e(TAG, "observeOnlineCircles error", error)
-                    close(error)
+                    trySend(emptyList())
                     return@addSnapshotListener
                 }
                 
-                val onlineCircles = snapshot?.documents?.mapNotNull { doc ->
-                    val id = doc.getString("id") ?: return@mapNotNull null
-                    val name = doc.getString("name") ?: "Unnamed Circle"
-                    val creatorId = doc.getString("creatorId") ?: ""
-                    val creatorEmail = doc.getString("creatorEmail")
-                    val memberIds = doc.get("memberIds") as? List<String> ?: emptyList()
-                    val membershipType = if (creatorId == userId) com.tally.app.data.MembershipType.OWNER else com.tally.app.data.MembershipType.LINKED
+                try {
+                    val onlineCircles = snapshot?.documents?.mapNotNull { doc ->
+                        val id = doc.getString("id") ?: return@mapNotNull null
+                        val name = doc.getString("name") ?: "Unnamed Circle"
+                        val creatorId = doc.getString("creatorId") ?: ""
+                        val creatorEmail = doc.getString("creatorEmail")
+                        val memberIds = doc.get("memberIds") as? List<String> ?: emptyList()
+                        val membershipType = if (creatorId == userId) com.tally.app.data.MembershipType.OWNER else com.tally.app.data.MembershipType.LINKED
+                        
+                        Circle(
+                            id = id,
+                            name = name,
+                            creatorId = creatorId,
+                            creatorEmail = creatorEmail,
+                            memberIds = memberIds,
+                            members = emptyList(), // Can fetch members if needed
+                            memberCount = memberIds.size,
+                            activityLabel = "Online",
+                            membershipType = membershipType,
+                            isDeviceOnly = false,
+                            inviteCode = doc.getString("inviteCode") ?: "",
+                            lastSessionAt = doc.getLong("lastSessionAt")
+                        )
+                    }?.sortedByDescending { it.lastSessionAt ?: 0L } ?: emptyList()
                     
-                    Circle(
-                        id = id,
-                        name = name,
-                        creatorId = creatorId,
-                        creatorEmail = creatorEmail,
-                        memberIds = memberIds,
-                        members = emptyList(), // Can fetch members if needed
-                        memberCount = memberIds.size,
-                        activityLabel = "Online",
-                        membershipType = membershipType,
-                        isDeviceOnly = false,
-                        inviteCode = doc.getString("inviteCode") ?: ""
-                    )
-                } ?: emptyList()
-                
-                trySend(onlineCircles)
+                    trySend(onlineCircles)
+                } catch (e: Exception) {
+                    Log.e(TAG, "observeOnlineCircles processing error", e)
+                    trySend(emptyList())
+                }
             }
             
         awaitClose { listener.remove() }

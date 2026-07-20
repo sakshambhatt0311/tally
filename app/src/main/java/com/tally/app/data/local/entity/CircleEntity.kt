@@ -15,4 +15,5 @@ data class CircleEntity(
     val activityLabel: String,
     val membershipType: MembershipType,
     val isDeviceOnly: Boolean = false,
+    val lastSessionAt: Long? = null,
 )

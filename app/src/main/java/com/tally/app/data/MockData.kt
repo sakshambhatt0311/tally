@@ -2,6 +2,7 @@ package com.tally.app.data
 
 import androidx.compose.runtime.Immutable
 import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.IgnoreExtraProperties
 
 /** Stable identity for each game a circle can track — mapped to a shape + brand color in the UI layer. */
 enum class GameId { CATAN, POKER, SMASH, UNO }
@@ -20,6 +21,7 @@ fun ScoringType.label(): String = when (this) {
 enum class MembershipType { OWNER, LINKED, LOCAL }
 
 /** One row on the "My Circles" landing screen. */
+@IgnoreExtraProperties
 @Immutable
 data class Circle(
     val id: String,
@@ -34,6 +36,7 @@ data class Circle(
     val membershipType: MembershipType = MembershipType.OWNER,
     val isDeviceOnly: Boolean = false,
     val inviteCode: String = "",
+    val lastSessionAt: Long? = null,
 )
 
 /** One card in the circle Feed tab's session timeline. */

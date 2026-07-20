@@ -21,7 +21,7 @@ import com.tally.app.data.local.entity.SessionEntity
         GameEntity::class,
         SessionEntity::class,
     ],
-    version = 5, // v5: Added isLowerScoreBetter to GameEntity
+    version = 6, // v6: Added lastSessionAt to CircleEntity
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

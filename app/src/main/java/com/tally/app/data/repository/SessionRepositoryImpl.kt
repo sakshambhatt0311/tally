@@ -83,7 +83,14 @@ class SessionRepositoryImpl @Inject constructor(
                     "playerIds" to session.playerIds,
                     "resultsJson" to session.resultsJson
                 )
-                firestore.collection("sessions").document(session.id).set(sessionMap).await()
+                val batch = firestore.batch()
+                val sessionRef = firestore.collection("sessions").document(session.id)
+                batch.set(sessionRef, sessionMap)
+                
+                val circleRef = firestore.collection("circles").document(session.circleId)
+                batch.update(circleRef, "lastSessionAt", session.playedAt)
+                
+                batch.commit().await()
                 android.util.Log.d("SessionRepository", "Online session ${session.id} saved to Firestore")
             } catch (e: Exception) {
                 android.util.Log.e("SessionRepository", "Failed to save online session", e)
@@ -91,6 +98,9 @@ class SessionRepositoryImpl @Inject constructor(
             }
         } else {
             sessionDao.insert(session)
+            circleRepository.getCircle(session.circleId).firstOrNull()?.let { circle ->
+                circleRepository.upsertCircle(circle.copy(lastSessionAt = session.playedAt))
+            }
         }
     }
 

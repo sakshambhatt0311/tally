@@ -25,13 +25,13 @@ interface CircleDao {
     @Delete
     suspend fun delete(circle: CircleEntity)
 
-    @Query("SELECT * FROM circles ORDER BY name")
+    @Query("SELECT * FROM circles ORDER BY COALESCE(lastSessionAt, 0) DESC, name ASC")
     fun getAllCircles(): Flow<List<CircleEntity>>
 
     /** Circles with a live member count computed from the players table (not the static column). */
     @Query(
         "SELECT c.*, (SELECT COUNT(id) FROM players WHERE circleId = c.id) AS memberCountDynamic " +
-            "FROM circles c ORDER BY c.name",
+            "FROM circles c ORDER BY COALESCE(c.lastSessionAt, 0) DESC, c.name ASC",
     )
     fun getCirclesWithMemberCount(): Flow<List<CircleWithMemberCount>>
 

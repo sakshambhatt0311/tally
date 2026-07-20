@@ -19,10 +19,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    val MIGRATION_5_6 = object : androidx.room.migration.Migration(5, 6) {
+        override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE circles ADD COLUMN lastSessionAt INTEGER")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): TallyDatabase =
         Room.databaseBuilder(context, TallyDatabase::class.java, "tally_database")
+            .addMigrations(MIGRATION_5_6)
             .build()
 
     @Provides
