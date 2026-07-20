@@ -14,3 +14,6 @@ google-services.json
 app/release/
 *.jks
 *.keystore
+
+Digital Assets/
+PROJECT_HANDOFF.md
