@@ -31,13 +31,14 @@ class PlayerRepositoryImpl @Inject constructor(
                 playerDao.getPlayersForCircle(circleId).map { players -> players.map { it.toDomain() } }
             } else {
                 circleRepository.observeOnlineMembers(circle.memberIds).map { users ->
-                    users.map { user ->
+                    val palette = PlayerColorKey.entries
+                    val registered = users.mapIndexed { index, user ->
                         val name = user.displayName ?: "Unknown"
                         RosterMember(
                             id = user.uid,
                             name = name,
                             initial = name.take(1).uppercase(),
-                            colorKey = PlayerColorKey.BLUE, // Fallback, could assign dynamically
+                            colorKey = palette[index % palette.size],
                             membershipType = when {
                                 user.uid == circle.creatorId -> MembershipType.OWNER
                                 user.isGuest -> MembershipType.LOCAL
@@ -46,6 +47,18 @@ class PlayerRepositoryImpl @Inject constructor(
                             photoUrl = user.photoUrl
                         )
                     }
+                    // Guests live on the circle doc, not the users collection — append them so they're
+                    // selectable everywhere the roster is used (Log Session, Head-to-Head, stats).
+                    val guests = circle.guestMembers.mapIndexed { index, guest ->
+                        RosterMember(
+                            id = guest.id,
+                            name = guest.name,
+                            initial = guest.name.take(1).uppercase().ifBlank { "?" },
+                            colorKey = palette[(registered.size + index) % palette.size],
+                            membershipType = MembershipType.LOCAL,
+                        )
+                    }
+                    registered + guests
                 }
             }
         }

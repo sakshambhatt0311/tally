@@ -2,6 +2,7 @@ package com.tally.app.data.repository
 
 import android.util.Log
 import com.tally.app.data.Circle
+import com.tally.app.data.GuestMember
 import com.tally.app.data.local.dao.CircleDao
 import com.tally.app.data.local.dao.PlayerDao
 import com.google.firebase.firestore.FieldValue
@@ -76,6 +77,10 @@ class CircleRepositoryImpl @Inject constructor(
                     val creatorEmail = snapshot.getString("creatorEmail")
                     @Suppress("UNCHECKED_CAST")
                     val memberIds = snapshot.get("memberIds") as? List<String> ?: emptyList()
+                    @Suppress("UNCHECKED_CAST")
+                    val guestMembers = (snapshot.get("guestMembers") as? Map<String, String>)
+                        ?.map { (guestId, guestName) -> GuestMember(guestId, guestName) }
+                        ?: emptyList()
                     val circle = Circle(
                         id = id,
                         name = name,
@@ -83,12 +88,13 @@ class CircleRepositoryImpl @Inject constructor(
                         creatorEmail = creatorEmail,
                         memberIds = memberIds,
                         members = emptyList(),
-                        memberCount = snapshot.getLong("memberCount")?.toInt() ?: memberIds.size,
+                        memberCount = memberIds.size + guestMembers.size,
                         activityLabel = "Online",
                         membershipType = com.tally.app.data.MembershipType.LINKED,
                         isDeviceOnly = false,
                         inviteCode = snapshot.getString("inviteCode") ?: "",
-                        lastSessionAt = snapshot.getLong("lastSessionAt")
+                        lastSessionAt = snapshot.getLong("lastSessionAt"),
+                        guestMembers = guestMembers,
                     )
                     trySend(circle)
                 } else {
@@ -202,8 +208,11 @@ class CircleRepositoryImpl @Inject constructor(
                         val creatorId = doc.getString("creatorId") ?: ""
                         val creatorEmail = doc.getString("creatorEmail")
                         val memberIds = doc.get("memberIds") as? List<String> ?: emptyList()
+                        // Guests live in the `guestMembers` map (not memberIds), so add their count in
+                        // or the card would never grow past the registered members.
+                        val guestCount = (doc.get("guestMembers") as? Map<*, *>)?.size ?: 0
                         val membershipType = if (creatorId == userId) com.tally.app.data.MembershipType.OWNER else com.tally.app.data.MembershipType.LINKED
-                        
+
                         Circle(
                             id = id,
                             name = name,
@@ -211,7 +220,7 @@ class CircleRepositoryImpl @Inject constructor(
                             creatorEmail = creatorEmail,
                             memberIds = memberIds,
                             members = emptyList(), // Can fetch members if needed
-                            memberCount = memberIds.size,
+                            memberCount = memberIds.size + guestCount,
                             activityLabel = "Online",
                             membershipType = membershipType,
                             isDeviceOnly = false,
@@ -260,13 +269,15 @@ class CircleRepositoryImpl @Inject constructor(
     override suspend fun removeMemberFromOnlineCircle(circleId: String, memberId: String): Result<Unit> {
         return try {
             val docRef = firestore.collection("circles").document(circleId)
+            // The id may be a registered member (in memberIds) or a guest (a key in the guestMembers
+            // map). Clear it from both in one write — the non-matching one is a harmless no-op — so a
+            // single decrement is correct either way.
             docRef.update(
-                mapOf(
-                    "memberIds" to com.google.firebase.firestore.FieldValue.arrayRemove(memberId),
-                    "memberCount" to com.google.firebase.firestore.FieldValue.increment(-1)
-                )
+                FieldPath.of("memberIds"), FieldValue.arrayRemove(memberId),
+                FieldPath.of("guestMembers", memberId), FieldValue.delete(),
+                FieldPath.of("memberCount"), FieldValue.increment(-1),
             ).await()
-            Log.d(TAG, "User $memberId removed from circle $circleId")
+            Log.d(TAG, "Member $memberId removed from circle $circleId")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "removeMemberFromOnlineCircle failed", e)
@@ -277,20 +288,16 @@ class CircleRepositoryImpl @Inject constructor(
     override suspend fun addGuestMemberToOnlineCircle(circleId: String, guestName: String): Result<Unit> {
         return try {
             val guestId = java.util.UUID.randomUUID().toString()
-            val guestUser = User(
-                uid = guestId,
-                displayName = guestName,
-                isGuest = true
-            )
-            // 1. Write the guest to users collection
-            firestore.collection("users").document(guestId).set(guestUser).await()
-            // 2. Add to circle's memberIds and increment count
+            // Store the guest ON the circle doc (guestMembers map: id -> name), NOT as a fake `users`
+            // doc. Writing an arbitrary users/{id} is blocked by security rules (a client may only
+            // write its own uid), which is why guests never appeared. Updating the shared circle doc
+            // is already permitted for members (same path add/remove uses), so this syncs to everyone.
             firestore.collection("circles").document(circleId)
                 .update(
-                    "memberIds", FieldValue.arrayUnion(guestId),
-                    "memberCount", FieldValue.increment(1)
+                    FieldPath.of("guestMembers", guestId), guestName,
+                    FieldPath.of("memberCount"), FieldValue.increment(1),
                 ).await()
-                
+
             Log.d(TAG, "WRITE addGuestMemberToOnlineCircle: guest $guestId added to $circleId")
             Result.success(Unit)
         } catch (e: Exception) {

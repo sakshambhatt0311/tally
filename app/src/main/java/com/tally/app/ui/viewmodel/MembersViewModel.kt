@@ -47,7 +47,7 @@ class MembersViewModel @Inject constructor(
                 circleRepository.observeOnlineMembers(circle.memberIds)
                     .map { users ->
                         val palette = PlayerColorKey.entries
-                        users.mapIndexed { index, user ->
+                        val registered = users.mapIndexed { index, user ->
                             RosterMember(
                                 id = user.uid,
                                 name = user.displayName ?: "Unknown",
@@ -61,6 +61,18 @@ class MembersViewModel @Inject constructor(
                                 photoUrl = user.photoUrl
                             )
                         }
+                        // Guests live on the circle doc (not the users collection); append them as
+                        // LOCAL members so they show for every account sharing this circle.
+                        val guests = circle.guestMembers.mapIndexed { index, guest ->
+                            RosterMember(
+                                id = guest.id,
+                                name = guest.name,
+                                initial = guest.name.take(1).uppercase().ifBlank { "?" },
+                                colorKey = palette[(registered.size + index) % palette.size],
+                                membershipType = MembershipType.LOCAL,
+                            )
+                        }
+                        registered + guests
                     }
             }
         }

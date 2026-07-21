@@ -37,7 +37,18 @@ data class Circle(
     val isDeviceOnly: Boolean = false,
     val inviteCode: String = "",
     val lastSessionAt: Long? = null,
+    /**
+     * Local/guest members of an ONLINE circle — people with no account. Stored on the circle doc
+     * itself (a `guestMembers` map of id -> name in Firestore), NOT as fake `users` docs, so any
+     * member can add them and every logged-in account sharing the circle sees them. Excluded from
+     * Firestore object writes; read/written manually via the map field.
+     */
+    @get:Exclude val guestMembers: List<GuestMember> = emptyList(),
 )
+
+/** A local/guest member of an online circle — no account, just an id + display name. */
+@Immutable
+data class GuestMember(val id: String, val name: String)
 
 /** One card in the circle Feed tab's session timeline. */
 @Immutable
