@@ -74,8 +74,8 @@ object SessionAggregator {
             }
             .filter { it.gamesPlayed > 0 }
             .sortedWith(
-                compareByDescending<LeaderboardEntry> { it.wins }
-                    .thenByDescending { it.winPercentage }
+                compareByDescending<LeaderboardEntry> { it.winPercentage }
+                    .thenByDescending { it.wins }
                     .thenByDescending { it.gamesPlayed },
             )
     }

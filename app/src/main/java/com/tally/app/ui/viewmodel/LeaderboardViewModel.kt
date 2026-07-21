@@ -47,14 +47,18 @@ class LeaderboardViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     // null = first emission pending (avoids an empty-state flash); non-null empty = no sessions to rank.
-    val leaderboard: StateFlow<List<LeaderboardEntry>?> = combine(
+    // The computed standings are paired with the filter they were computed for, so the UI always has a
+    // consistent (filter, rows) snapshot — the filter changes in lock-step with the rows, never a frame
+    // ahead. That lets the Board list remount cleanly on a game switch instead of scroll-anchoring to
+    // the previous game's rows during the recompute gap.
+    val standings: StateFlow<BoardStandings?> = combine(
         playerRepository.getPlayersForCircle(circleId),
         sessionRepository.getSessionsForCircle(circleId),
         gameRepository.getGamesForCircle(circleId),
         selectedTemplateId,
     ) { players, sessions, games, filterId ->
         // Single source of truth for ranking (ties/multi-winner aware) lives in SessionAggregator.
-        SessionAggregator.leaderboard(circleId, players, sessions, games, filterId)
+        BoardStandings(filterId, SessionAggregator.leaderboard(circleId, players, sessions, games, filterId))
     }
         // Aggregation is CPU work — keep it off the main thread so list rendering never stutters.
         .flowOn(Dispatchers.Default)
@@ -65,3 +69,10 @@ class LeaderboardViewModel @Inject constructor(
         selectedTemplateId.value = templateId
     }
 }
+
+/** A consistent Board snapshot: the ranked [entries] together with the [filterTemplateId] they were
+ *  computed for (null = "All Games"). Pairing them keeps the rendered filter and rows in lock-step. */
+data class BoardStandings(
+    val filterTemplateId: String?,
+    val entries: List<LeaderboardEntry>,
+)

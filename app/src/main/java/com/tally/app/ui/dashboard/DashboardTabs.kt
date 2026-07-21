@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -52,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -243,8 +245,10 @@ fun BoardTab(
     modifier: Modifier = Modifier,
     viewModel: LeaderboardViewModel = hiltViewModel(),
 ) {
-    val leaderboard by viewModel.leaderboard.collectAsStateWithLifecycle()
+    val standings by viewModel.standings.collectAsStateWithLifecycle()
     val games by viewModel.games.collectAsStateWithLifecycle()
+    // Immediate value for chip highlighting; the LIST reads the filter from `standings` instead, so
+    // the rendered filter and rows always move together (see below).
     val selected by viewModel.selectedFilter.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -263,7 +267,7 @@ fun BoardTab(
             }
         }
 
-        val list = leaderboard
+        val list = standings?.entries
         Crossfade(
             targetState = loadPhase(list),
             animationSpec = tween(300),
@@ -277,38 +281,46 @@ fun BoardTab(
                     subtitle = "Log a session to claim the top spot!",
                     modifier = Modifier.fillMaxSize(),
                 )
-                LoadPhase.Content -> LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 180.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    // Rank is the list position — the VM already sorted by wins, then win%, then games.
-                    itemsIndexed(
-                        list.orEmpty(),
-                        key = { _, entry -> entry.player.name },
-                        contentType = { _, _ -> "leaderboardRow" },
-                    ) { index, entry ->
-                        val rank = index + 1
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .animateItem(),
-                            shape = RoundedCornerShape(24.dp),
-                            // Low-alpha podium tint glows over the current theme surface — legible in both modes.
-                            colors = CardDefaults.cardColors(containerColor = podiumContainerColor(rank)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        ) {
-                            LeaderboardRow(
-                                rank = rank,
-                                name = entry.player.name,
-                                statSummary = "Win rate ${entry.winPercentage}% · ${entry.gamesPlayed} games",
-                                avatarInitial = entry.player.initial,
-                                avatarColor = entry.player.colorKey.toAvatarColor(),
-                                hasStreak = false, // streaks land in Step 4 (deep analytics)
-                                streakCount = 0,
-                                modifier = Modifier.padding(16.dp),
-                                photoUrl = entry.player.photoUrl,
-                            )
+                // key() on the filter the rows were computed for: when a game switch produces new
+                // standings, this whole subtree remounts with a fresh scroll state at the top — no
+                // stale frame, no scroll-anchoring to the previous game's rows. Because it keys on the
+                // filter carried BY the data (not the instant `selected`), it never remounts mid-swap,
+                // and a live update within the same filter just refreshes rows in place.
+                LoadPhase.Content -> key(standings?.filterTemplateId) {
+                    val listState = rememberLazyListState()
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        // Rank is the list position — the VM already sorted by wins, then win%, then games.
+                        itemsIndexed(
+                            list.orEmpty(),
+                            key = { _, entry -> entry.player.name },
+                            contentType = { _, _ -> "leaderboardRow" },
+                        ) { index, entry ->
+                            val rank = index + 1
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                shape = RoundedCornerShape(24.dp),
+                                // Low-alpha podium tint glows over the current theme surface — legible in both modes.
+                                colors = CardDefaults.cardColors(containerColor = podiumContainerColor(rank)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                            ) {
+                                LeaderboardRow(
+                                    rank = rank,
+                                    name = entry.player.name,
+                                    statSummary = "Win rate ${entry.winPercentage}% · ${entry.wins} wins · ${entry.gamesPlayed} games",
+                                    avatarInitial = entry.player.initial,
+                                    avatarColor = entry.player.colorKey.toAvatarColor(),
+                                    hasStreak = false, // streaks land in Step 4 (deep analytics)
+                                    streakCount = 0,
+                                    modifier = Modifier.padding(16.dp),
+                                    photoUrl = entry.player.photoUrl,
+                                )
+                            }
                         }
                     }
                 }

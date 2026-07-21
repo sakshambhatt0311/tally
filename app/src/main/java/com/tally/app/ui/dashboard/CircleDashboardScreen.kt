@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tally.app.ui.theme.PlusJakartaSans
 import com.tally.app.ui.viewmodel.FeedViewModel
 import com.tally.app.ui.viewmodel.GamesViewModel
 import com.tally.app.ui.viewmodel.LeaderboardViewModel
@@ -153,16 +154,16 @@ fun CircleDashboardScreen(
                         LogSessionFab(onLogSessionClick)
                     }
                     DashboardTab.Board -> {
+                        // Board keeps only Head-to-Head; logging a session lives on the Feed tab.
                         ExtendedFloatingActionButton(
-                            text = { Text("Head-to-Head", style = MaterialTheme.typography.labelLarge) },
+                            text = { Text("Head-to-Head", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, fontFamily = PlusJakartaSans) },
                             icon = { Icon(Icons.Filled.CompareArrows, contentDescription = null) },
                             onClick = { onViewHeadToHead("jordan", "alex") }, // stub pair until selection UI
                             shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
                             elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
                         )
-                        LogSessionFab(onLogSessionClick)
                     }
                     DashboardTab.Members -> Unit // Add-player FAB is hosted inside MembersTab now.
                     DashboardTab.Games -> Unit // "Add a Game" is an inline pill button inside GamesTab.
@@ -245,7 +246,7 @@ private fun DashboardTabLabel(
 @Composable
 private fun EditSessionsFab(onClick: () -> Unit) {
     ExtendedFloatingActionButton(
-        text = { Text("Edit Sessions", style = MaterialTheme.typography.labelLarge) },
+        text = { Text("Edit Sessions", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, fontFamily = PlusJakartaSans) },
         icon = { Icon(Icons.Rounded.Edit, contentDescription = null) },
         onClick = onClick,
         shape = CircleShape,
@@ -260,7 +261,7 @@ private fun EditSessionsFab(onClick: () -> Unit) {
 @Composable
 private fun LogSessionFab(onClick: () -> Unit) {
     ExtendedFloatingActionButton(
-        text = { Text("Log Session", style = MaterialTheme.typography.labelLarge) },
+        text = { Text("Log Session", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, fontFamily = PlusJakartaSans) },
         icon = { Icon(Icons.Filled.Add, contentDescription = null) },
         onClick = onClick,
         shape = CircleShape,

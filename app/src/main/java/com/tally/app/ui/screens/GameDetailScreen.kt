@@ -162,7 +162,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.itemsIndexedStandings
         LeaderboardRow(
             rank = index + 1,
             name = entry.player.name,
-            statSummary = "${entry.winPercentage}% win · ${entry.gamesPlayed} games",
+            statSummary = "Win rate ${entry.winPercentage}% · ${entry.wins} wins · ${entry.gamesPlayed} games",
             avatarInitial = entry.player.initial,
             avatarColor = entry.player.colorKey.toAvatarColor(),
             hasStreak = false, // streaks not modeled yet
