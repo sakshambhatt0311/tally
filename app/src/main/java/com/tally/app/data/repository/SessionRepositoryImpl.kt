@@ -205,7 +205,7 @@ class SessionRepositoryImpl @Inject constructor(
                                 seed = id.hashCode()
                             )
                         )
-                    }.sortedByDescending { it.playedAt }.take(50)
+                    }.sortedByDescending { it.playedAt }
                     trySend(summaries)
                 } else {
                     trySend(emptyList())
