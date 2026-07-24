@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.GridOn
 import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Hexagon
 import androidx.compose.material.icons.rounded.Leaderboard
+import androidx.compose.material.icons.rounded.LocalPolice
 import androidx.compose.material.icons.rounded.MapsHomeWork
 import androidx.compose.material.icons.rounded.Policy
 import androidx.compose.material.icons.rounded.Quiz
@@ -75,6 +76,7 @@ object MockGameData {
             GameTemplate("Poker (Cash Games)", Icons.Rounded.Style, Color(0xFF2E7D32), "Free-for-all", "Net Profit/Loss", "None", "Tracked by financial net at the end of the session (+/-).", ScoringType.POINTS, description = "Play for chips and track the profit. Read your opponents, manage your bankroll, and leave the table up.", startsAdded = true),
             GameTemplate("Chess", Icons.Rounded.Castle, Color(0xFF6D4C41), "H2H", "Win / Loss / Draw", "None", "1 point for win, 0.5 for draw, 0 for loss.", ScoringType.WIN_LOSS, description = "The ultimate test of strategy and foresight. Checkmate your opponent or fight to a hard-earned draw."),
             GameTemplate("Monopoly", Icons.Rounded.MapsHomeWork, Color(0xFF43A047), "Free-for-all", "Placement / Net Worth", "Properties Owned", "Order of bankruptcy, or total net worth at a time limit.", ScoringType.PLACEMENT, description = "Buy, trade, and build your property empire. Watch your friends go bankrupt one hotel at a time."),
+            GameTemplate("Scotland Yard", Icons.Rounded.LocalPolice, Color(0xFF37474F), "Team", "Win / Loss", "None", "Detectives vs. Mr. X — mark the winning side (one or more players).", ScoringType.WIN_LOSS, description = "Mr. X versus the detectives. Hunt the fugitive across the map, or slip away undetected into the night."),
         ),
         "Outdoor & Sports Games" to listOf(
             GameTemplate("Table Tennis", Icons.Rounded.SportsTennis, Color(0xFFFB8C00), "H2H", "Sets Won", "Total Points", "Points vs. Points to 11 (win by 2). Best of 3/5 sets.", ScoringType.POINTS, description = "Lightning-fast rallies across the net. Spin, smash, and serve your way to 11 points."),
